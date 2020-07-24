@@ -2,10 +2,12 @@ const { question } = require('../models/');
 
 module.exports = {
   getQuestions: (req, res) => {
-    { productId } = req.params;
+    const { productId } = req.params;
+    const { page, count } = req.query;
     question
-      .getQuestionsByProductId(productId)
+      .getQuestionsByProductId(productId, page, count)
       .then((questions) => {
+        console.log(questions);
         res.status(200).send(questions);
       })
       .catch((err) => {
@@ -15,7 +17,7 @@ module.exports = {
   },
 
   postQuestion: (req, res) => {
-    { productId } = req.params;
+    const { productId } = req.params;
     question
       .createQuestion(productId, req.body)
       .then(() => {
@@ -28,7 +30,7 @@ module.exports = {
   },
 
   putHelpful: (req, res) => {
-    { questionId } = req.params;
+    const { questionId } = req.params;
     question
       .updateQuestionHelpful(questionId)
       .then(() => {
@@ -41,7 +43,7 @@ module.exports = {
   },
 
   putReport: (req, res) => {
-    { questionId } = req.params;
+    const { questionId } = req.params;
     question
       .updateQuestionReport(questionId)
       .then(() => {

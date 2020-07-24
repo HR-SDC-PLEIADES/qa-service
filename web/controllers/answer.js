@@ -2,9 +2,10 @@ const { answer } = require('../models/');
 
 module.exports = {
   getAnswers: (req, res) => {
-    { questionId } = req.params;
+    const { questionId } = req.params;
+    const { page, count } = req.query;
     answer
-      .getAnswersByQuestionId(questionId)
+      .getAnswersByQuestionId(questionId, page, count)
       .then((answers) => {
         res.status(200).send(answers);
       })
@@ -15,7 +16,7 @@ module.exports = {
   },
 
   postAnswer: (req, res) => {
-    { questionId } = req.params;
+    const { questionId } = req.params;
     answer
       .createAnswer(questionId, req.body)
       .then(() => {
@@ -28,9 +29,9 @@ module.exports = {
   },
 
   putHelpful: (req, res) => {
-    { answerId } = req.params;
+    const { answerId } = req.params;
     answer
-      .updateAnswerHelpful(answerId, req.body)
+      .updateAnswerHelpful(answerId)
       .then(() => {
         res.sendStatus(204);
       })
@@ -41,9 +42,9 @@ module.exports = {
   },
 
   putReport: (req, res) => {
-    { answerId } = req.params;
+    const { answerId } = req.params;
     answer
-      .updateAnswerReport(answerId, req.body)
+      .updateAnswerReport(answerId)
       .then(() => {
         res.sendStatus(204);
       })
