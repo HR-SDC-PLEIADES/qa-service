@@ -43,18 +43,18 @@ module.exports = {
     return pool
       .connect()
       .then((client) => {
-        const result = client.query(query, [
-          questionId,
-          body,
-          new Date(),
-          name,
-          email,
-          photos,
-        ]);
-        client.release();
-        return result.rows;
+        return client
+          .query(query, [questionId, body, new Date(), name, email, photos])
+          .then((res) => {
+            client.release();
+            return res;
+          })
+          .catch((e) => {
+            client.release();
+            console.log(e.stack);
+          });
       })
-      .catch();
+      .catch((e) => console.log(e.stack));
   },
 
   updateAnswerHelpful: (answerId) => {
@@ -63,11 +63,18 @@ module.exports = {
     return pool
       .connect()
       .then((client) => {
-        const result = client.query(query, [answerId]);
-        client.release();
-        return result.rows;
+        return client
+          .query(query, [answerId])
+          .then((res) => {
+            client.release();
+            return res;
+          })
+          .catch((e) => {
+            client.release();
+            console.log(e.stack);
+          });
       })
-      .catch();
+      .catch((e) => console.log(e.stack));
   },
 
   updateAnswerReport: (answerId) => {
@@ -76,10 +83,17 @@ module.exports = {
     return pool
       .connect()
       .then((client) => {
-        const result = client.query(query, [answerId]);
-        client.release();
-        return result.rows;
+        return client
+          .query(query, [answerId])
+          .then((res) => {
+            client.release();
+            return res;
+          })
+          .catch((e) => {
+            client.release();
+            console.log(e.stack);
+          });
       })
-      .catch();
+      .catch((e) => console.log(e.stack));
   },
 };
