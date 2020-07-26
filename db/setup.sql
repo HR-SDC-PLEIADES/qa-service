@@ -34,3 +34,7 @@ CREATE TABLE answer_photos (
       REFERENCES answer (answer_id) MATCH SIMPLE
       ON DELETE CASCADE ON UPDATE NO ACTION
 );
+
+CREATE INDEX answer_question_id_idx ON answer (question_id);
+
+CREATE INDEX answer_photos_answer_id_idx ON answer_photos (answer_id);

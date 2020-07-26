@@ -2,10 +2,8 @@ const pool = require('../db');
 
 module.exports = {
   getQuestionsByProductId: (productId, page = 1, count = 5) => {
-    return pool
-      .connect()
-      .then((client) => {
-        const query = `SELECT $1 as product_id, json_agg(results) as results
+    return pool.connect().then((client) => {
+      const query = `SELECT $1 as product_id, json_agg(results) as results
         FROM (
             SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.question_helpfulness, q.reported,
             (
@@ -34,76 +32,70 @@ module.exports = {
             OFFSET $2
             LIMIT $3
         ) results`;
-        return client
-          .query(query, [productId, page * count - count, count])
-          .then((res) => {
-            client.release();
-            return res.rows[0];
-          })
-          .catch((e) => {
-            client.release();
-            console.log(e.stack);
-          });
-      })
-      .catch((e) => console.log(e.stack));
+      return client
+        .query(query, [productId, page * count - count, count])
+        .then((res) => {
+          client.release();
+          return res.rows[0];
+        })
+        .catch((e) => {
+          client.release();
+          console.log(e.stack);
+          throw e;
+        });
+    });
   },
 
   createQuestion: (productId, { body, name, email }) => {
     const query = `INSERT INTO public.question (product_id,body,name,email,date) VALUES ($1,$2,$3)`;
-    return pool
-      .connect()
-      .then((client) => {
-        return client
-          .query(query, [productId, body, name, email, new Date()])
-          .then((res) => {
-            client.release();
-            return res;
-          })
-          .catch((e) => {
-            client.release();
-            console.log(e.stack);
-          });
-      })
-      .catch((e) => console.log(e.stack));
+    return pool.connect().then((client) => {
+      return client
+        .query(query, [productId, body, name, email, new Date()])
+        .then((res) => {
+          client.release();
+          return res;
+        })
+        .catch((e) => {
+          client.release();
+          console.log(e.stack);
+          throw e;
+        });
+    });
   },
 
   updateQuestionHelpful: (questionId) => {
     const query = `UPDATE public.question SET helpfulness = helpfulness + 1
     WHERE question_id = $1;`;
-    return pool
-      .connect()
-      .then((client) => {
-        return client
-          .query(query, [questionId])
-          .then((res) => {
-            client.release();
-            return res;
-          })
-          .catch((e) => {
-            client.release();
-            console.log(e.stack);
-          });
-      })
-      .catch((e) => console.log(e.stack));
+    return pool.connect().then((client) => {
+      return client
+        .query(query, [questionId])
+        .then((res) => {
+          client.release();
+          return res;
+        })
+        .catch((e) => {
+          client.release();
+          console.log(e.stack);
+          throw e;
+        });
+    });
   },
 
   updateQuestionReport: (questionId) => {
     const query = `UPDATE public.question SET reported = reported + 1
     WHERE question_id = $1;`;
-    return pool
-      .connect()
-      .then((client) => {
-        return client
-          .query(query, [questionId])
-          .then((res) => {
-            client.release();
-            return res;
-          })
-          .catch((e) => {
-            client.release();
-            console.log(e.stack);
-          });
-      })
-      .catch((e) => console.log(e.stack));
+    return pool.connect().then((client) => {
+      return client
+        .query(query, [questionId])
+        .then((res) => {
+          client.release();
+          return res;
+        })
+        .catch((e) => {
+          client.release();
+          console.log(e.stack);
+          throw e;
+        });
+    });
   },
 };

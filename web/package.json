@@ -1,10 +1,14 @@
 {
   "name": "project-greenfield",
   "version": "1.0.0",
-  "description": "",
+  "description": "Question and Answer API Service",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HR-SDC-PLEIADES/qa-service.git"
   },
   "keywords": [],
   "author": "",
@@ -12,6 +16,7 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
-    "pg": "^8.3.0"
+    "pg": "^8.3.0",
+    "pg-format": "^1.0.4"
   }
 }

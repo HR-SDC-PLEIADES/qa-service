@@ -7,7 +7,6 @@ module.exports = {
     question
       .getQuestionsByProductId(productId, page, count)
       .then((questions) => {
-        console.log(questions);
         res.status(200).send(questions);
       })
       .catch((err) => {

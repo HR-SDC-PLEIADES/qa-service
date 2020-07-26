@@ -8,7 +8,6 @@ ehthumbs.db
 Thumbs.db
 
 # Docker
-docker-compose.yml
 
 db/data
 raw-data

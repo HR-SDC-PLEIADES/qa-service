@@ -1,11 +1,10 @@
 const pool = require('../db');
+const format = require('pg-format');
 
 module.exports = {
   getAnswersByQuestionId: (questionId, page = 1, count = 5) => {
-    return pool
-      .connect()
-      .then((client) => {
-        const query = `SELECT $1 as question, $2 as page, $3 as count, json_agg(results)
+    return pool.connect().then((client) => {
+      const query = `SELECT $1 as question, $2 as page, $3 as count, json_agg(results)
         FROM (
             SELECT a.answer_id, a.body, a.date, a.answer_name, a.helpfullness,
               (
@@ -24,76 +23,90 @@ module.exports = {
             OFFSET $2
             LIMIT $3
         ) results`;
-        return client
-          .query(query, [questionId, page * count - count, count])
-          .then((res) => {
-            client.release();
-            return res.rows[0];
-          })
-          .catch((e) => {
-            client.release();
-            console.log(e.stack);
-          });
-      })
-      .catch((e) => console.log(e.stack));
+      return client
+        .query(query, [questionId, page * count - count, count])
+        .then((res) => {
+          client.release();
+          return res.rows[0];
+        })
+        .catch((e) => {
+          client.release();
+          console.log(e.stack);
+          throw e;
+        });
+    });
   },
 
   createAnswer: (questionId, { body, name, email, photos }) => {
-    const query = `INSERT INTO public.answer (question_id,body,"date",answer_name,email) VALUES ($1,$2,$3,$4,$5)`;
-    return pool
-      .connect()
-      .then((client) => {
-        return client
-          .query(query, [questionId, body, new Date(), name, email, photos])
-          .then((res) => {
-            client.release();
-            return res;
-          })
-          .catch((e) => {
-            client.release();
-            console.log(e.stack);
+    const answerQuery = `INSERT INTO public.answer (question_id,body,"date",answer_name,email) VALUES ($1,$2,$3,$4,$5) RETURNING answer_id`;
+    const photoQuery = `INSERT INTO public.answer_photo (answer_id,url) VALUES $L`;
+    return pool.connect().then((client) => {
+      return client
+        .query('BEGIN')
+        .then(() => {
+          return client.query(answerQuery, [
+            questionId,
+            body,
+            new Date(),
+            name,
+            email,
+          ]);
+        })
+        .then((res) => {
+          console.log(res);
+          const answer_id = res.row[0].answer_id;
+          const valuesArray = photos.map((url) => {
+            return [answer_id, url];
           });
-      })
-      .catch((e) => console.log(e.stack));
+          photoQuery = format(photoQuery, valuesArray);
+          return client.query(photoQuery);
+        })
+        .then((res) => {
+          const result = client.query('COMMIT');
+          client.release();
+          return result;
+        })
+        .catch((e) => {
+          client.query('ROLLBACK');
+          client.release();
+          throw e;
+        });
+    });
   },
 
   updateAnswerHelpful: (answerId) => {
     const query = `UPDATE public.answer SET helpfulness = helpfulness + 1
     WHERE answer_id = $1;`;
-    return pool
-      .connect()
-      .then((client) => {
-        return client
-          .query(query, [answerId])
-          .then((res) => {
-            client.release();
-            return res;
-          })
-          .catch((e) => {
-            client.release();
-            console.log(e.stack);
-          });
-      })
-      .catch((e) => console.log(e.stack));
+    return pool.connect().then((client) => {
+      return client
+        .query(query, [answerId])
+        .then((res) => {
+          client.release();
+          return res;
+        })
+        .catch((e) => {
+          client.release();
+          console.log(e.stack);
+          throw e;
+        });
+    });
   },
 
   updateAnswerReport: (answerId) => {
     const query = `UPDATE public.answer SET reported = reported + 1
     WHERE answer_id = $1;`;
-    return pool
-      .connect()
-      .then((client) => {
-        return client
-          .query(query, [answerId])
-          .then((res) => {
-            client.release();
-            return res;
-          })
-          .catch((e) => {
-            client.release();
-            console.log(e.stack);
-          });
-      })
-      .catch((e) => console.log(e.stack));
+    return pool.connect().then((client) => {
+      return client
+        .query(query, [answerId])
+        .then((res) => {
+          client.release();
+          return res;
+        })
+        .catch((e) => {
+          client.release();
+          console.log(e.stack);
+          throw e;
+        });
+    });
   },
 };
