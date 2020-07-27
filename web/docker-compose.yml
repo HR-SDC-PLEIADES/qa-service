@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - ${API_PORT_EXTERNAL}:${API_PORT_INTERNAL}
+    volumes:
+      - .:/var/www/qa
+    environment:
+      PGUSER: ${POSTGRES_USER}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB}
+      PGHOST: ${POSTGRES_HOST}
+      PGPORT: ${POSTGRES_PORT}
