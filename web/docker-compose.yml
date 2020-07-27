@@ -5,8 +5,6 @@ services:
     build: .
     ports:
       - ${API_PORT_EXTERNAL}:${API_PORT_INTERNAL}
-    volumes:
-      - .:/var/www/qa
     environment:
       PGUSER: ${POSTGRES_USER}
       PGPASSWORD: ${POSTGRES_PASSWORD}
