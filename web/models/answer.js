@@ -10,11 +10,9 @@ module.exports = {
               (
                 SELECT array_to_json(coalesce(array_agg(photo), ARRAY[]::record[]))
                 FROM (
-                  SELECT public.answer_photos.id, public.answer_photos.url
-                  FROM public.answer
-                  INNER JOIN public.answer_photos
-                  ON public.answer.answer_id = public.answer_photos.answer_id
-                  WHERE public.answer_photos.answer_id = a.answer_id
+                  SELECT pap.id, pap.url
+                  FROM public.answer_photos pap
+                  WHERE pap.answer_id = a.answer_id
                 ) photo
               ) as photos
             FROM public.answer a
