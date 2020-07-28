@@ -4,7 +4,7 @@ const format = require('pg-format');
 module.exports = {
   getAnswersByQuestionId: (questionId, page = 1, count = 5) => {
     return pool.connect().then((client) => {
-      const query = `SELECT $1 as question, $2 as page, $3 as count, json_agg(results)
+      const query = `SELECT $1 as question, $2 as page, $3 as count, array_to_json(coalesce(array_agg(results), ARRAY[]::record[])) as results
         FROM (
             SELECT a.answer_id, a.body, a.date, a.answer_name, a.helpfullness,
               (
@@ -39,7 +39,7 @@ module.exports = {
 
   createAnswer: (questionId, { body, name, email, photos }) => {
     const answerQuery = `INSERT INTO public.answer (question_id,body,"date",answer_name,email) VALUES ($1,$2,$3,$4,$5) RETURNING answer_id`;
-    const photoQuery = `INSERT INTO public.answer_photo (answer_id,url) VALUES $L`;
+    const photoQuery = `INSERT INTO public.answer_photos (answer_id,url) VALUES %L`;
     return pool.connect().then((client) => {
       return client
         .query('BEGIN')
@@ -53,13 +53,12 @@ module.exports = {
           ]);
         })
         .then((res) => {
-          console.log(res);
-          const answer_id = res.row[0].answer_id;
+          const answer_id = res.rows[0].answer_id;
           const valuesArray = photos.map((url) => {
             return [answer_id, url];
           });
-          photoQuery = format(photoQuery, valuesArray);
-          return client.query(photoQuery);
+          const formattedPhotoQuery = format(photoQuery, valuesArray);
+          return client.query(formattedPhotoQuery);
         })
         .then((res) => {
           const result = client.query('COMMIT');
