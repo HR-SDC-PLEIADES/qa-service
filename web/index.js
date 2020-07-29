@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 
 app.use('/qa', router);
 
-app.get('/loaderio-e1fd998d1918962783aa240d06b6d9c3', (req, res) => {
+app.get(`/${process.env.LOADERIO}`, (req, res) => {
   res.sendFile('loaderio-verification.txt');
 });
 
