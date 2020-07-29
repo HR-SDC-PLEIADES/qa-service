@@ -13,6 +13,10 @@ app.use(bodyParser.json());
 
 app.use('/qa', router);
 
+app.get(`/${process.env.LOADERIO}`, (req, res) => {
+  res.sendFile('loaderio-verification.txt');
+});
+
 if (!module.parent) {
   app.listen(app.get('port'), () =>
     console.log('Project Greenfield listening on', app.get('port'))
