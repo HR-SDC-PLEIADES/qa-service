@@ -11,7 +11,4 @@ services:
       PGDATABASE: ${POSTGRES_DB}
       PGHOST: ${POSTGRES_HOST}
       PGPORT: ${POSTGRES_PORT}
-<<<<<<< HEAD
       LOADERIO: ${LOADERIO}
-=======
->>>>>>> 33d5cced7ebfde8f0dd03de7d0e9cfc492bb17d0
